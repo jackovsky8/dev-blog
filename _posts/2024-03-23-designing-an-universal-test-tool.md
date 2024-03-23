@@ -286,7 +286,9 @@ def run_tests(
 <!-- markdownlint-capture -->
 <!-- markdownlint-disable -->
 
-### Separate
+## About this project
+
+You can see the project on GitHub [universal-test-tool](https://github.com/jackovsky8/universal-test-tool) and use it for testing your systems.
 
 {: data-toc-skip='' .mt-4 .mb-0 }
 
