@@ -486,14 +486,16 @@ _continue_on_failure_\*\* flag is set, we don't stop the tests, but log the erro
 
 <!-- markdownlint-restore -->
 
+{% raw %}
 An important part of the base module is the variable replacement. We want to replace placeholders in the call with the
 data from the data file. Since some plugins might use placeholders like ```${ URL }``` (e.g. a bash plugin) where
-nothing
-should be replaced, we decided to use ```\{\{ VARIABLE_NAME \}\}``` as a placeholder.
+nothing should be replaced, we decided to use ```{{ VARIABLE_NAME }}``` as a placeholder.
+{% endraw %}
 
 The code for the variable replacement looks like:
 
 ```python
+{% raw %}
 """
 This module contains the functions to substitute variables.
 """
@@ -534,12 +536,12 @@ def replace_string_variables(
     """
     changed: Any = to_change
 
-    # Find all variables in the string. Variables are defined as \{\{foo.bar[0]\}\}
-    pattern = r"\{\{[a-zA-Z0-9\_\-\.\[\]\|\:\ ]+\}\}"
+    # Find all variables in the string. Variables are defined as {{foo.bar[0]}}
+    pattern = r"{{[a-zA-Z0-9\_\-\.\[\]\|\:\ ]+}}"
     variables = findall(pattern, changed)
     # Replace the variables with the data, if possible
     for variable in variables:
-        # Remove \{\{ and \}\}
+        # Remove {{ and }}
         var = variable[2:-2]
         # Split for pipes
         pipes = var.split("|")
@@ -716,23 +718,28 @@ def recursively_replace_variables(
         return to_change
     else:
         return None
+{% endraw %}
 ```
 
 So lets go through what we achieve here. First I want to give an example how the replacement works. Let's assume we have
 the following data and configuration:
 
 ```yaml
+{% raw %}
 var: "value1"
 var2: "value2"
 var3: [ "This is a {{var}} and {{var2}}" ]
+{% endraw %}
 ```
 
 ```yaml
+{% raw %}
 - type: FOO
   call:
     key:
       - "{{var3}}"
       - "{{var2}}"
+{% endraw %}
 ```
 
 Then we want to end up with the following call:
@@ -769,15 +776,17 @@ var:
       - value4
 ```
 
-You can access the values with ```\{\{var[0]\}\}``` and ```\{\{var[1].value2[0]\}\}```.
+{% raw %}
+You can access the values with ```{{var[0]}}``` and ```{{var[1].value2[0]}}```.
 
 Therefore, we split the string at the dots and iterate over the keys. If the key is a list, we access the list with the
 given index. A decision was made here to lay the responsibility for the correct access on the user. So if you access a
 list with an index which is not available, the program will raise an error and stop the tests.
 
 Another powerful feature is the possibility to add pipes to the placeholders. So if you have a placeholder like
-```\{\{var|str|int\}\}``` the value will be converted to a string and then to an integer. For later there would be
+```{{var|str|int}}``` the value will be converted to a string and then to an integer. For later there would be
 imaginable to add more functions to the pipes, without breaking the existing tests.
+{% endraw %}
 
 <!-- markdownlint-capture -->
 <!-- markdownlint-disable -->
