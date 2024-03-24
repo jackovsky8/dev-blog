@@ -725,15 +725,15 @@ the following data and configuration:
 ```yaml
 var: "value1"
 var2: "value2"
-var3: [ "This is a \{\{var\}\} and \{\{var2\}\}" ]
+var3: [ "This is a {{var}} and {{var2}}" ]
 ```
 
 ```yaml
 - type: FOO
   call:
     key:
-      - "\{\{var3\}\}"
-      - "\{\{var2\}\}"
+      - "{{var3}}"
+      - "{{var2}}"
 ```
 
 Then we want to end up with the following call:
