@@ -461,8 +461,7 @@ function, so that we actually can store it in the main function for running all 
 Now we have all the tests loaded and want to run one after another. But we want to keep this in a structured way, so we
 can handle every plugin in the same manner and don't lose too much power for the plugins.
 
-In the previous section we have seen that we have two functions for every plugin. The ```augment_call``` and the
-```make_call```.
+In the previous section we have seen that we have two functions for every plugin. The ```augment_call``` and the ```make_call```.
 
 The lifecycle of a test is as follows:
 
