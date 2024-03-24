@@ -55,16 +55,16 @@ So we only need to declare what we need, add a text for printing the help and if
 That's basically it, for creating a cli.
 
 So for our program the easiest way to start the cli should be, that we access the folder where the test configuration is
-stored and run **_test-tool_**.
+stored and run ***test-tool***.
 If the naming of the configuration files is right, there are no further arguments required.
 
-As to see in the code below, there are to different config files per test. The **_Configuration-File_** `config.yaml`
-and the **_Data-File_** `data.yaml`. The **_Configuration-File_** contains the test steps which we want to run.
-The **_Data-File_** contains complementary data. The idea behind this separation is, that if you want to run the
-tests in multiple environments you just add another **_Data-File_** and there is no need to change the test steps
+As to see in the code below, there are to different config files per test. The ***Configuration-File*** `config.yaml`
+and the ***Data-File*** `data.yaml`. The ***Configuration-File*** contains the test steps which we want to run.
+The ***Data-File*** contains complementary data. The idea behind this separation is, that if you want to run the
+tests in multiple environments you just add another ***Data-File*** and there is no need to change the test steps
 itself.
 
-The argument **_project_** makes it possible to start a test from everywhere. The path given here will be used as **_cwd_**. So that we can use relative urls in the test configuration.
+The argument ***project*** makes it possible to start a test from everywhere. The path given here will be used as ***cwd***. So that we can use relative urls in the test configuration.
 
 The other arguments are pretty self-explanatory, so we won't discuss them here further.
 
@@ -184,8 +184,8 @@ The basic idea is, we want to run one run the test steps one after another. Some
 parallel, but since this program is designed for complex test cases which not necessarily are idempotent we want to keep
 the order.
 
-So basically the **_Configuration-File_** contains a list of test steps. A test step contains the **_type_** and
-the **_call_**. The **_type_** defines the plugin with which the test step will be executed. And the **_call_**
+So basically the ***Configuration-File*** contains a list of test steps. A test step contains the ***type*** and
+the ***call***. The ***type*** defines the plugin with which the test step will be executed. And the ***call***
 contains detailed information for the execution. Even if you will see[^plugins], that we take an effort to keep the
 structure for every call similar, it might look quite different for every plugin.
 
@@ -200,7 +200,7 @@ So basically the config file will look like:
     __data__: for_test_step_2
 ```
 
-The **_Data-File_** contains, as said above complementary data. The structure of this one is not defined. It only needs to fit to the test steps.
+The ***Data-File*** contains, as said above complementary data. The structure of this one is not defined. It only needs to fit to the test steps.
 
 ```yaml
 URL: 'www.github.com'
@@ -312,10 +312,10 @@ complex. But the structure of the plugins is always the same.
 
 Some plugins ship with the software, other might be written by the user, or some might be downloaded from a 3rd party.
 We require the naming scheme for the plugins to be the same, so that the software can find them. The naming scheme is
-**_test*tool*[a-zA-Z\\_]\_plugin_**.
+***test*tool*[a-zA-Z\\_]\_plugin***.
 
-So if a test step is defined in the **_Configuration-File_** with the **_type_** **_FOO_**, the software will look for a
-module named **_test_tool_foo_plugin_** to import.
+So if a test step is defined in the ***Configuration-File*** with the ***type*** ***FOO***, the software will look for a
+module named ***test_tool_foo_plugin*** to import.
 
 The dependencies for the plugins shipped with the software are installed with the software.
 
@@ -431,22 +431,22 @@ def import_plugin(plugin: str, loaded_call_types: Dict[str, CallType]) -> bool:
 So as mentioned above, what we do here is to import the plugin and save the required functions in a dictionary to cache
 them for later usage.
 
-In Line 62 we use the **_importlib_**[^importlib] to import the plugin. If the plugin is not found, we log an error and
+In Line 62 we use the ***importlib***[^importlib] to import the plugin. If the plugin is not found, we log an error and
 return False.
 
 If the module is found, we create a dictionary with the required functions and a default value. The default value is
 required, since we want to keep the structure for every plugin the same, even if the plugin does not provide the
 function.
 
-For now there are only three parts loaded from the plugin. The **_default_call_** is a dictionary which contains the
-default values for the call. The **_augment_call_** is a function which can be used to add additional data to the call,
-or manipulate it beforehand. The **_make_call_** is the function which actually runs the test step.
+For now there are only three parts loaded from the plugin. The ***default_call*** is a dictionary which contains the
+default values for the call. The ***augment_call*** is a function which can be used to add additional data to the call,
+or manipulate it beforehand. The ***make_call*** is the function which actually runs the test step.
 
 This design is quite flexible, since we can add more functions to the plugin if required. In that case we only need to
-add a new key to the **_PLUGIN_TEMPLATE_**, the **_PLUGIN_COMPONENT_TYPES_** and the **_PLUGIN_DEFAULT_**. We don't need
+add a new key to the ***PLUGIN_TEMPLATE***, the ***PLUGIN_COMPONENT_TYPES*** and the ***PLUGIN_DEFAULT***. We don't need
 to change the code for the plugins.
 
-The **_dictionary_** **_loaded_call_types_** is used to cache the loaded plugins for later usage, it is passed to this
+The ***dictionary*** ***loaded_call_types*** is used to cache the loaded plugins for later usage, it is passed to this
 function, so that we actually can store it in the main function for running all test.
 
 <!-- markdownlint-capture -->
@@ -461,8 +461,8 @@ function, so that we actually can store it in the main function for running all 
 Now we have all the tests loaded and want to run one after another. But we want to keep this in a structured way, so we
 can handle every plugin in the same manner and don't lose too much power for the plugins.
 
-In the previous section we have seen that we have two functions for every plugin. The **_augment_call_** and the
-**_make_call_**.
+In the previous section we have seen that we have two functions for every plugin. The ***augment_call*** and the
+***make_call***.
 
 The lifecycle of a test is as follows:
 
@@ -470,10 +470,10 @@ The lifecycle of a test is as follows:
 - Check if the plugin is loaded (And load it if necessary)
 - Merge the default call with the call from the configuration
 - Replace the placeholders in the call with the data from the data file[^datafile]
-- Run the **_augment_call_** function
-- Replace the placeholders in the call again, since the **_augment_call_** function might have added new variables we
+- Run the ***augment_call*** function
+- Replace the placeholders in the call again, since the ***augment_call*** function might have added new variables we
   want to replace.
-- Run the **_make_call_** function
+- Run the ***make_call*** function
 
 We run all that function under a try-except block, so that we can catch errors and log them. If the \* \*
 _continue_on_failure_\*\* flag is set, we don't stop the tests, but log the error and continue with the next test.
@@ -488,9 +488,9 @@ _continue_on_failure_\*\* flag is set, we don't stop the tests, but log the erro
 <!-- markdownlint-restore -->
 
 An important part of the base module is the variable replacement. We want to replace placeholders in the call with the
-data from the data file. Since some plugins might use placeholders like **_${ URL }_** (e.g. a bash plugin) where
+data from the data file. Since some plugins might use placeholders like ***${ URL }*** (e.g. a bash plugin) where
 nothing
-should be replaced, we decided to use **_{{ VARIABLE_NAME }}_** as a placeholder.
+should be replaced, we decided to use ***\{\{ VARIABLE_NAME \}\}*** as a placeholder.
 
 The code for the variable replacement looks like:
 
@@ -535,12 +535,12 @@ def replace_string_variables(
     """
     changed: Any = to_change
 
-    # Find all variables in the string. Variables are defined as {{foo.bar[0]}}
-    pattern = r"{{[a-zA-Z0-9\_\-\.\[\]\|\:\ ]+}}"
+    # Find all variables in the string. Variables are defined as \{\{foo.bar[0]\}\}
+    pattern = r"\{\{[a-zA-Z0-9\_\-\.\[\]\|\:\ ]+\}\}"
     variables = findall(pattern, changed)
     # Replace the variables with the data, if possible
     for variable in variables:
-        # Remove {{ and }}
+        # Remove \{\{ and \}\}
         var = variable[2:-2]
         # Split for pipes
         pipes = var.split("|")
@@ -725,15 +725,15 @@ the following data and configuration:
 ```yaml
 var: "value1"
 var2: "value2"
-var3: [ "This is a {{var}} and {{var2}}" ]
+var3: [ "This is a \{\{var\}\} and \{\{var2\}\}" ]
 ```
 
 ```yaml
 - type: FOO
   call:
     key:
-      - "{{var3}}"
-      - "{{var2}}"
+      - "\{\{var3\}\}"
+      - "\{\{var2\}\}"
 ```
 
 Then we want to end up with the following call:
@@ -746,17 +746,17 @@ Then we want to end up with the following call:
       - "value2"
 ```
 
-To start the replacement we call the **_recursively_replace_variables_** function with the data and the call. This
+To start the replacement we call the ***recursively_replace_variables*** function with the data and the call. This
 function iterates over the keys of the call and checks if the value is a dictionary, a list or a string. We decided to
 treat them in different functions, since the replacement is quite different for every type, and we want to keep the
 functions as simple as possible.
 
-So if the value is a dictionary, we call the **_recursively_replace_variables_** function again with the new dictionary.
+So if the value is a dictionary, we call the ***recursively_replace_variables*** function again with the new dictionary.
 
-If the value is a list, we call the **_replace_list_variables_** function with the list, where basically the same
+If the value is a list, we call the ***replace_list_variables*** function with the list, where basically the same
 happens, but for every entry in the list.
 
-The real replacement happens in the **_replace_string_variables_** function. Here we search for the placeholders in the
+The real replacement happens in the ***replace_string_variables*** function. Here we search for the placeholders in the
 string and replace them with the data from the data file. The search is done with a regular expression.
 
 To make the replacement more powerful, we decided to add the possibility to access objects and lists in the data file.
@@ -770,14 +770,14 @@ var:
       - value4
 ```
 
-You can access the values with **_{{var[0]}}_** and **_{{var[1].value2[0]}}_**.
+You can access the values with ***\{\{var[0]\}\}*** and ***\{\{var[1].value2[0]\}\}***.
 
 Therefore, we split the string at the dots and iterate over the keys. If the key is a list, we access the list with the
 given index. A decision was made here to lay the responsibility for the correct access on the user. So if you access a
 list with an index which is not available, the program will raise an error and stop the tests.
 
 Another powerful feature is the possibility to add pipes to the placeholders. So if you have a placeholder like
-**_{{var|str|int}}_** the value will be converted to a string and then to an integer. For later there would be
+***\{\{var|str|int\}\}*** the value will be converted to a string and then to an integer. For later there would be
 imaginable to add more functions to the pipes, without breaking the existing tests.
 
 <!-- markdownlint-capture -->
